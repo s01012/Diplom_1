@@ -53,12 +53,10 @@ class TestBurger:
         [1, 1, 4, 800],
         [2, 2, 5, 1200]])
     def test_get_price(self, bun_index, ingredient_sauce_index, ingredient_filling_index, expected_result):
-        burger = Burger()
-        database = Database()
-        burger.set_buns(database.available_buns()[bun_index])
-        burger.add_ingredient(database.available_ingredients()[ingredient_sauce_index])
-        burger.add_ingredient(database.available_ingredients()[ingredient_filling_index])
-        assert burger.get_price() == expected_result
+        self.burger.set_buns(self.database.available_buns()[bun_index])
+        self.burger.add_ingredient(self.database.available_ingredients()[ingredient_sauce_index])
+        self.burger.add_ingredient(self.database.available_ingredients()[ingredient_filling_index])
+        assert self.burger.get_price() == expected_result
 
     @pytest.mark.parametrize('bun_index,ingredient_sauce_index,ingredient_filling_index,expected_receipt', [
         (0, 0, 3, "(==== black bun ====)\n"
@@ -78,12 +76,10 @@ class TestBurger:
                   "Price: 1200")
     ])
     def test_get_receipt(self, bun_index, ingredient_sauce_index, ingredient_filling_index, expected_receipt):
-        burger = Burger()
-        database = Database()
-        burger.set_buns(database.available_buns()[bun_index])
-        burger.add_ingredient(database.available_ingredients()[ingredient_sauce_index])
-        burger.add_ingredient(database.available_ingredients()[ingredient_filling_index])
-        assert burger.get_receipt() == expected_receipt
+        self.burger.set_buns(self.database.available_buns()[bun_index])
+        self.burger.add_ingredient(self.database.available_ingredients()[ingredient_sauce_index])
+        self.burger.add_ingredient(self.database.available_ingredients()[ingredient_filling_index])
+        assert self.burger.get_receipt() == expected_receipt
 
 
 
