@@ -1,8 +1,8 @@
 import pytest
-import pytest_cov
 from unittest.mock import Mock
 from praktikum.burger import Burger
-from praktikum.ingredient_types import *
+from praktikum.ingredient_types import INGREDIENT_TYPE_SAUCE, INGREDIENT_TYPE_FILLING
+from praktikum.database import Database
 
 
 class TestBurger:
@@ -10,6 +10,7 @@ class TestBurger:
     @pytest.fixture(autouse=True)
     def burger_init(self):
         self.burger = Burger()
+        self.database = Database()
 
     @pytest.mark.parametrize('name_bun,price', [['Флюоресцентная булка R2-D3', 0.99],
                                                 ['Краторная булка №200i', 1.0]])
@@ -21,15 +22,15 @@ class TestBurger:
         assert self.burger.bun.get_name() == name_bun and self.burger.bun.get_price() == price
 
     @pytest.mark.parametrize('name_ingredient,price,type_ingredient', [
-                                                 ['Мясо бессмертных моллюсков Protostomia', 0.99, INGREDIENT_TYPE_FILLING],
-                                                 ['Говяжий метеорит (отбивная)', 0.98, INGREDIENT_TYPE_FILLING],
-                                                 ['Соус сырный', 0.01, INGREDIENT_TYPE_SAUCE],
-                                                 ['Филе Люминесцентного тетраодонтимформа', 1.01, INGREDIENT_TYPE_FILLING],
-                                                 ['Хрустящие минеральные кольца', 2.00, INGREDIENT_TYPE_FILLING],
-                                                 ['Соус томатный', 0.2, INGREDIENT_TYPE_SAUCE],
-                                                 ['Кристаллы марсианских альфа-сахаридов', 3.00, INGREDIENT_TYPE_FILLING],
-                                                 ['Мини-салат Экзо-Плантаго', 5.0, INGREDIENT_TYPE_FILLING],
-                                                 ['Сыр с астероидной плесенью', 10.0, INGREDIENT_TYPE_FILLING]])
+        ['Мясо бессмертных моллюсков Protostomia', 0.99, INGREDIENT_TYPE_FILLING],
+        ['Говяжий метеорит (отбивная)', 0.98, INGREDIENT_TYPE_FILLING],
+        ['Соус сырный', 0.01, INGREDIENT_TYPE_SAUCE],
+        ['Филе Люминесцентного тетраодонтимформа', 1.01, INGREDIENT_TYPE_FILLING],
+        ['Хрустящие минеральные кольца', 2.00, INGREDIENT_TYPE_FILLING],
+        ['Соус томатный', 0.2, INGREDIENT_TYPE_SAUCE],
+        ['Кристаллы марсианских альфа-сахаридов', 3.00, INGREDIENT_TYPE_FILLING],
+        ['Мини-салат Экзо-Плантаго', 5.0, INGREDIENT_TYPE_FILLING],
+        ['Сыр с астероидной плесенью', 10.0, INGREDIENT_TYPE_FILLING]])
     def test_add_ingredient(self, name_ingredient, price, type_ingredient):
         mock_ingredient = Mock()
         mock_ingredient.get_name.return_value = name_ingredient
@@ -46,3 +47,44 @@ class TestBurger:
         self.burger.add_ingredient(mock_ingredient)
         self.burger.remove_ingredient(0)
         assert len(self.burger.ingredients) == 0
+
+    @pytest.mark.parametrize('bun_index,ingredient_sauce_index,ingredient_filling_index,expected_result', [
+        [0, 0, 3, 400],
+        [1, 1, 4, 800],
+        [2, 2, 5, 1200]])
+    def test_get_price(self, bun_index, ingredient_sauce_index, ingredient_filling_index, expected_result):
+        burger = Burger()
+        database = Database()
+        burger.set_buns(database.available_buns()[bun_index])
+        burger.add_ingredient(database.available_ingredients()[ingredient_sauce_index])
+        burger.add_ingredient(database.available_ingredients()[ingredient_filling_index])
+        assert burger.get_price() == expected_result
+
+    @pytest.mark.parametrize('bun_index,ingredient_sauce_index,ingredient_filling_index,expected_receipt', [
+        (0, 0, 3, "(==== black bun ====)\n"
+                  "= sauce hot sauce =\n"
+                  "= filling cutlet =\n"
+                  "(==== black bun ====)\n\n"
+                  "Price: 400"),
+        (1, 1, 4, "(==== white bun ====)\n"
+                  "= sauce sour cream =\n"
+                  "= filling dinosaur =\n"
+                  "(==== white bun ====)\n\n"
+                  "Price: 800"),
+        (2, 2, 5, "(==== red bun ====)\n"
+                  "= sauce chili sauce =\n"
+                  "= filling sausage =\n"
+                  "(==== red bun ====)\n\n"
+                  "Price: 1200")
+    ])
+    def test_get_receipt(self, bun_index, ingredient_sauce_index, ingredient_filling_index, expected_receipt):
+        burger = Burger()
+        database = Database()
+        burger.set_buns(database.available_buns()[bun_index])
+        burger.add_ingredient(database.available_ingredients()[ingredient_sauce_index])
+        burger.add_ingredient(database.available_ingredients()[ingredient_filling_index])
+        assert burger.get_receipt() == expected_receipt
+
+
+
+
