@@ -80,7 +80,3 @@ class TestBurger:
         self.burger.add_ingredient(self.database.available_ingredients()[ingredient_sauce_index])
         self.burger.add_ingredient(self.database.available_ingredients()[ingredient_filling_index])
         assert self.burger.get_receipt() == expected_receipt
-
-
-
-
