@@ -5,20 +5,19 @@ from praktikum.ingredient_types import *
 
 class TestDatabase:
 
-    @pytest.fixture(autouse=True)
-    def database_init(self):
-        self.database = Database()
-
     def test_get_available_buns(self):
-        list_available_buns = self.database.available_buns()
+        database = Database()
+        list_available_buns = database.available_buns()
         assert len(list_available_buns) == 3
 
     def test_get_available_ingredient(self):
-        list_available_ingredient = self.database.available_ingredients()
+        database = Database()
+        list_available_ingredient = database.available_ingredients()
         assert len(list_available_ingredient) == 6
 
     def test_get_count_available_ingredient_type_sauce(self):
-        list_available_ingredient = self.database.available_ingredients()
+        database = Database()
+        list_available_ingredient = database.available_ingredients()
         available_sauces = []
         for ingredient in list_available_ingredient:
             if ingredient.get_type() == INGREDIENT_TYPE_SAUCE:
@@ -26,7 +25,8 @@ class TestDatabase:
         assert len(available_sauces) == 3
 
     def test_get_count_available_ingredient_type_filling(self):
-        list_available_ingredient = self.database.available_ingredients()
+        database = Database()
+        list_available_ingredient = database.available_ingredients()
         available_filling = []
         for ingredient in list_available_ingredient:
             if ingredient.get_type() == INGREDIENT_TYPE_FILLING:
@@ -40,7 +40,8 @@ class TestDatabase:
                                                        ['dinosaur', 200],
                                                        ['sausage', 300]])
     def test_get_price_available_ingredient(self, name_ingredient, price):
-        list_available_ingredient = self.database.available_ingredients()
+        database = Database()
+        list_available_ingredient = database.available_ingredients()
         available_price = {}
         for ingredient in list_available_ingredient:
             available_price[ingredient.get_name()] = ingredient.get_price()
